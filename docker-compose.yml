@@ -1,7 +1,7 @@
 version: "2"
 services:
   app:
-    container_name: afs
+    container_name: cat-app
     restart: always
     build: .
     ports:
