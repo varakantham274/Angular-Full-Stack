@@ -4,6 +4,7 @@ services:
     container_name: cat-app
     restart: always
     build: .
+    image: cat-system
     ports:
       - "3000:3000"
     links:
