@@ -30,9 +30,8 @@ pipeline {
             steps {
                 sh '''
                 commit="${env.GIT_COMMIT}"
-                short_commit="${commit:0:7}"
-                image_tag="${registery_base_url}${registry_name}:${short_commit}"
-                echo ${short_commit}
+                echo "${commit}"
+                image_tag="${registery_base_url}${registry_name}:${commit}"
                 echo ${image_tag}
                 '''
                 }
