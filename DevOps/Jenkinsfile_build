@@ -29,7 +29,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 sh '''
-                cd Angular-Full-Stack
+                ls
                 docker-compose build
                 '''
                 }
