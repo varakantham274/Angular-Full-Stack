@@ -26,15 +26,6 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
-            steps {
-                sh '''
-                ls
-                docker-compose build
-                '''
-                }
-            }
-
         stage('print variables') {
             steps {
                 sh '''
@@ -43,6 +34,15 @@ pipeline {
                 image_tag = "${registery_base_url}${registry_name}:${short_commit}"
                 echo ${short_commit}
                 echo ${image_tag}
+                '''
+                }
+            }
+            
+        stage('Docker Build') {
+            steps {
+                sh '''
+                ls
+                docker-compose build
                 '''
                 }
             }
