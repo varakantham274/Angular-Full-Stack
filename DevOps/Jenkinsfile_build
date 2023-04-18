@@ -15,21 +15,23 @@ pipeline {
             }
         stage('Checkout') {
             steps {
-                checkout([$class: 'GitSCM',
-                branches: [[name: '*/master']], 
-                extensions: [], 
-                userRemoteConfigs: [[
-                credentialsId: 'github_vitetech', 
-                url: 'https://github.com/vitetech/Angular-Full-Stack.git'
+                script {
+                    def scmVars = checkout([$class: 'GitSCM',
+                    branches: [[name: '*/master']], 
+                    extensions: [], 
+                    userRemoteConfigs: [[
+                    credentialsId: 'github_vitetech', 
+                    url: 'https://github.com/vitetech/Angular-Full-Stack.git'
                     ]]
                 ])
+                }
             }
         }
 
         stage('print variables') {
             steps {
                 script {
-                    commit = "${GIT_COMMIT}"
+                    commit = "${scmVars.GIT_COMMIT}"
                     image_tag="${registery_base_url}${registry_name}:${commit}"
                 }
                 sh '''
