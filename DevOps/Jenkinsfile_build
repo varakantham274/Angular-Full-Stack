@@ -31,7 +31,8 @@ pipeline {
         stage('print variables') {
             steps {
                 script {
-                    commit = scmVars.GIT_COMMIT
+                    env.COMMIT_ID = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                    commit = env.GIT_COMMIT
                     image_tag="${registery_base_url}${registry_name}:${commit}"
                 }
                 sh '''
