@@ -29,7 +29,7 @@ pipeline {
         stage('print variables') {
             steps {
                 script {
-                    commit = "${env.GIT_COMMIT}"
+                    commit = "${GIT_COMMIT}"
                     image_tag="${registery_base_url}${registry_name}:${commit}"
                 }
                 sh '''
