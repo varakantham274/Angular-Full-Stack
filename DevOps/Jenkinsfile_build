@@ -1,0 +1,68 @@
+pipeline {
+    agent {
+        label 'slave1'
+    }
+
+    environment {
+        short_commit = "${GIT_COMMIT:0:7}"
+        image_tag = "${registery_base_url}${registry_name}:${short_commit}"
+    }
+
+    options { 
+        ansiColor('xterm') 
+    } 
+    
+    stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+                }
+            }
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM',
+                branches: [[name: '*/master']], 
+                extensions: [], 
+                userRemoteConfigs: [[
+                credentialsId: 'github_vitetech', 
+                url: 'https://github.com/vitetech/Angular-Full-Stack.git'
+                    ]]
+                ])
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh '''
+                cd Angular-Full-Stack
+                docker-compose build
+                '''
+                }
+            }
+
+        stage('print variables') {
+            steps {
+                sh '''
+                echo ${short_commit}
+                echo ${image_tag}
+                '''
+                }
+            }
+
+        stage('tag image') {
+            steps {
+                sh '''
+                docker tag cat-system ${image_tag}
+                '''
+                }
+            }
+
+        stage('push image') {
+            steps {
+                sh '''
+                docker push ${image_tag}
+                '''
+                }
+            }
+    }
+}
