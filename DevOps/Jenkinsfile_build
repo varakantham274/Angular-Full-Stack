@@ -3,15 +3,10 @@ pipeline {
         label 'slave1'
     }
 
-    environment {
-        short_commit = "${GIT_COMMIT:0:7}"
-        image_tag = "${registery_base_url}${registry_name}:${short_commit}"
-    }
-
     options { 
         ansiColor('xterm') 
     } 
-    
+
     stages {
         stage('Clean Workspace') {
             steps {
@@ -43,6 +38,8 @@ pipeline {
         stage('print variables') {
             steps {
                 sh '''
+                short_commit = "${env.GIT_COMMIT:0:7}"
+                image_tag = "${registery_base_url}${registry_name}:${short_commit}"
                 echo ${short_commit}
                 echo ${image_tag}
                 '''
