@@ -7,12 +7,19 @@ pipeline {
         ansiColor('xterm') 
     } 
 
+    environment {
+        ecrurl = "https://718202520801.dkr.ecr.ca-central-1.amazonaws.com"
+        ecrcredentials = "ecr:ca-central-1:aws-jenkins-user"
+        dockerImage = ''
+    } 
+
     stages {
         stage('Clean Workspace') {
             steps {
                 cleanWs()
                 }
             }
+
         stage('Checkout') {
             steps {
                 script {
@@ -24,47 +31,42 @@ pipeline {
                     url: 'https://github.com/vitetech/Angular-Full-Stack.git'
                     ]]
                 ])
+                env.COMMIT_ID = scmVars.GIT_COMMIT
+                echo "${env.COMMIT_ID}"
                 }
+                sh 'printenv'
             }
         }
 
         stage('print variables') {
             steps {
                 script {
-                    env.COMMIT_ID = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                    env.commit = env.GIT_COMMIT
-                    env.image_tag="${registery_base_url}${registry_name}:${commit}"
+                    env.image_tag="${registery_base_url}${registry_name}:${COMMIT_ID}"
                 }
                 sh '''
-                echo "commit: ${commit}"
-                image_tag="${registery_base_url}${registry_name}:${commit}"
+                echo "commit: ${COMMIT_ID}"
+                echo "image_tag: ${image_tag}"
                 '''
                 }
             }
 
         stage('Docker Build') {
             steps {
-                sh '''
-                ls
-                docker-compose build
-                '''
-                }
-            }
-
-        stage('tag image') {
-            steps {
-                sh '''
-                docker tag cat-system ${image_tag}
-                '''
+                script {
+                    dockerImage = docker.build image_tag
+                    }
                 }
             }
 
         stage('push image') {
             steps {
-                sh '''
-                docker push ${image_tag}
-                '''
+                script {
+                    docker.withRegistry(ecrurl, ecrcredentials) 
+                    {     
+                        dockerImage.push()
+                    }
                 }
             }
+        }
     }
 }
