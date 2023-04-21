@@ -38,7 +38,6 @@ pipeline {
                 env.COMMIT_ID = scmVars.GIT_COMMIT.substring(0, 7)
                 echo "${env.COMMIT_ID}"
                 }
-                sh 'printenv'
             }
         }
 

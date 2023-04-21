@@ -40,7 +40,6 @@ pipeline
                 env.COMMIT_ID = scmVars.GIT_COMMIT.substring(0, 7)
                 echo "${env.COMMIT_ID}"
                 }
-                sh 'printenv'
             }
         }
 
@@ -86,6 +85,16 @@ pipeline
             {
                 sh '''
                 docker-compose -f docker-compose-config.yml up -d
+                '''
+            }
+        }
+
+        stage('Run docker system prune')
+        {
+            steps
+            {
+                sh '''
+                docker system prune -af
                 '''
             }
         }
