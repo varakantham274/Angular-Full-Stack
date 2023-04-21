@@ -4,11 +4,15 @@ pipeline {
     }
 
     options { 
-        ansiColor('xterm') 
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        ansiColor('xterm')
+        timestamps ()
     } 
 
     environment {
+        ecrrepo = 'pet-system'
         ecrurl = "https://718202520801.dkr.ecr.ca-central-1.amazonaws.com"
+        ecrbaseurl = "718202520801.dkr.ecr.ca-central-1.amazonaws.com/"
         ecrcredentials = "ecr:ca-central-1:aws-jenkins-user"
         dockerImage = ''
     } 
@@ -31,14 +35,14 @@ pipeline {
                     url: 'https://github.com/vitetech/Angular-Full-Stack.git'
                     ]]
                 ])
-                env.COMMIT_ID = scmVars.GIT_COMMIT
+                env.COMMIT_ID = scmVars.GIT_COMMIT.substring(0, 7)
                 echo "${env.COMMIT_ID}"
                 }
                 sh 'printenv'
             }
         }
 
-        stage('print variables') {
+        stage('Set variables') {
             steps {
                 script {
                     env.image_tag="${registery_base_url}${registry_name}:${COMMIT_ID}"
@@ -66,6 +70,14 @@ pipeline {
                         dockerImage.push()
                     }
                 }
+            }
+        }
+
+        stage('Remove image') {
+            steps {
+                sh '''
+                    docker rmi "${ecrbaseurl}${image_tag}"
+                '''
             }
         }
     }
