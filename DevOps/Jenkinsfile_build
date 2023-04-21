@@ -76,7 +76,7 @@ pipeline {
         stage('Remove image') {
             steps {
                 sh '''
-                    docker rmi "${ecrbaseurl}${image_tag}"
+                    docker rmi ${image_tag}
                 '''
             }
         }
