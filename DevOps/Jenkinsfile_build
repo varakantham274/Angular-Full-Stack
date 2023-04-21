@@ -45,7 +45,7 @@ pipeline {
         stage('Set variables') {
             steps {
                 script {
-                    env.image_tag="${registery_base_url}${registry_name}:${COMMIT_ID}"
+                    env.image_tag="${ecrbaseurl}${ecrrepo}:${COMMIT_ID}"
                 }
                 sh '''
                 echo "commit: ${COMMIT_ID}"
