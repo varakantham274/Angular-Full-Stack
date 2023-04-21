@@ -1,0 +1,93 @@
+pipeline
+{
+    options
+    {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        ansiColor('xterm')
+        timestamps ()
+    }
+
+    agent {
+        label 'slave1'
+    }
+
+    environment 
+    {
+        ecrrepo = 'pet-system'
+        ecrurl = "https://718202520801.dkr.ecr.ca-central-1.amazonaws.com"
+        ecrbaseurl = "718202520801.dkr.ecr.ca-central-1.amazonaws.com/"
+        ecrcredentials = "ecr:ca-central-1:aws-jenkins-user"
+    }
+    stages
+    {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+                }
+            }
+
+        stage('Checkout') {
+            steps {
+                script {
+                    def scmVars = checkout([$class: 'GitSCM',
+                    branches: [[name: '*/master']], 
+                    extensions: [], 
+                    userRemoteConfigs: [[
+                    credentialsId: 'github_vitetech', 
+                    url: 'https://github.com/vitetech/Angular-Full-Stack.git'
+                    ]]
+                ])
+                env.COMMIT_ID = scmVars.GIT_COMMIT.substring(0, 7)
+                echo "${env.COMMIT_ID}"
+                }
+                sh 'printenv'
+            }
+        }
+
+        stage('Set variables') {
+            steps {
+                script {
+                    env.image_tag="${ecrbaseurl}${ecrrepo}:${COMMIT_ID}"
+                }
+                sh '''
+                echo "commit: ${COMMIT_ID}"
+                echo "image_tag: ${image_tag}"
+                '''
+                }
+            }
+
+        stage('Update Docker compose') {
+            steps {
+                sh '''
+                cat docker-compose-config.yml
+                sed -i "s#{{image-name}}#${image_tag}#g" docker-compose-config.yml
+                cat docker-compose-config.yml
+                '''
+                }
+            }
+
+        stage('Docker image pull')
+        {
+            steps
+            {
+                script
+                {
+                    docker.withRegistry(ecrurl, ecrcredentials)
+                    {
+                        docker.image(image_tag).pull()
+                    }
+                }
+            }
+        }
+
+        stage('Run docker compose')
+        {
+            steps
+            {
+                sh '''
+                docker-compose -f docker-compose-config.yml up -d
+                '''
+            }
+        }
+    }
+}
