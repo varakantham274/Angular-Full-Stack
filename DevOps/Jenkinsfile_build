@@ -13,7 +13,7 @@ pipeline {
         ecrrepo = 'pet-system'
         ecrurl = "https://827857156945.dkr.ecr.ca-central-1.amazonaws.com/pet-system"
         ecrbaseurl = "827857156945.dkr.ecr.ca-central-1.amazonaws.com/"
-        ecrcredentials = "ecr:ca-central-1:aws-jenkins-user"
+        ecrcredentials = "ecr:ca-central-1:master_user"
         dockerImage = ''
     } 
 
