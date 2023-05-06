@@ -14,9 +14,9 @@ pipeline
     environment 
     {
         ecrrepo = 'pet-system'
-        ecrurl = "https://718202520801.dkr.ecr.ca-central-1.amazonaws.com"
-        ecrbaseurl = "718202520801.dkr.ecr.ca-central-1.amazonaws.com/"
-        ecrcredentials = "ecr:ca-central-1:aws-jenkins-user"
+        ecrurl = "https://827857156945.dkr.ecr.ca-central-1.amazonaws.com/pet-system"
+        ecrbaseurl = "827857156945.dkr.ecr.ca-central-1.amazonaws.com/"
+        ecrcredentials = "ecr:ca-central-1:master_user"
     }
     stages
     {
@@ -33,8 +33,8 @@ pipeline
                     branches: [[name: '*/master']], 
                     extensions: [], 
                     userRemoteConfigs: [[
-                    credentialsId: 'github_vitetech', 
-                    url: 'https://github.com/vitetech/Angular-Full-Stack.git'
+                    credentialsId: 'github_access', 
+                    url: 'https://github.com/varakantham274/Angular-Full-Stack.git'
                     ]]
                 ])
                 env.COMMIT_ID = scmVars.GIT_COMMIT.substring(0, 7)
